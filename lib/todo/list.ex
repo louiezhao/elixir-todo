@@ -1,8 +1,8 @@
-defmodule TodoList do
+defmodule Todo.List do
   defstruct auto_id: 1, entries: %{}
 
   def new(entries \\ []) do
-    Enum.reduce(entries, %TodoList{}, &add(&2, &1))
+    Enum.reduce(entries, %Todo.List{}, &add(&2, &1))
   end
 
   def entries(todo_list) do
@@ -19,7 +19,7 @@ defmodule TodoList do
   def add(todo_list, entry) do
     new_entries = Map.put(todo_list.entries, todo_list.auto_id, entry)
 
-    %TodoList{
+    %Todo.List{
       auto_id: todo_list.auto_id + 1,
       entries: new_entries
     }
@@ -28,7 +28,7 @@ defmodule TodoList do
   def update(todo_list, id, updater) do
     if Map.has_key?(todo_list.entries, id) do
       new_entries = Map.update!(todo_list.entries, id, updater)
-      %TodoList{todo_list | entries: new_entries}
+      %Todo.List{todo_list | entries: new_entries}
     else
       todo_list
     end
@@ -37,7 +37,7 @@ defmodule TodoList do
   def update(todo_list, id, key, value) do
     if get_in(todo_list.entries, [id, key]) do
       new_entries = put_in(todo_list.entries, [id, key], value)
-      %TodoList{todo_list | entries: new_entries}
+      %Todo.List{todo_list | entries: new_entries}
     else
       todo_list
     end
@@ -45,6 +45,6 @@ defmodule TodoList do
 
   def delete(todo_list, id) do
     new_entries = Map.delete(todo_list.entries, id)
-    %TodoList{todo_list | entries: new_entries}
+    %Todo.List{todo_list | entries: new_entries}
   end
 end

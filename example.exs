@@ -6,7 +6,7 @@ defmodule Example do
       %{date: ~D[2017-09-12], title: "Traveling"},
       %{date: ~D[2018-03-01], title: "Shopping"}
     ]
-    |> TodoServer.start()
+    |> Todo.Server.start()
 
     [
       {:update, 9, :title, "Reservation 1"},
@@ -16,12 +16,12 @@ defmodule Example do
       {:delete, 2},
       {:add, %{date: ~D[2019-02-09], title: "Beijing"}}
     ]
-    |> Enum.each(&TodoServer.execute/1)
+    |> Enum.each(&Todo.Server.execute/1)
 
-    TodoServer.query(~D[2017-09-20]) |> IO.inspect()
-    TodoServer.list() |> IO.inspect()
-    TodoServer.cleanup()
-    TodoServer.list() |> IO.inspect()
+    Todo.Server.query(~D[2017-09-20]) |> IO.inspect()
+    Todo.Server.list() |> IO.inspect()
+    Todo.Server.cleanup()
+    Todo.Server.list() |> IO.inspect()
   end
 end
 
