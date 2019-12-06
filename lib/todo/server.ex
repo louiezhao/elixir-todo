@@ -10,11 +10,6 @@ defmodule Todo.Server do
   def update(server, id, k, v), do: GenServer.cast(server, {:update, id, k, v})
   def query(server, date), do: GenServer.call(server, {:query, date})
   def list(server), do: GenServer.call(server, :list)
-
-  def execute(server, {:add, entry}), do: add(server, entry)
-  def execute(server, {:delete, id}), do: delete(server, id)
-  def execute(server, {:update, id, k, v}), do: update(server, id, k, v)
-
   def cleanup(server), do: send(server, :cleanup)
   def stop(server), do: send(server, :terminate)
 
