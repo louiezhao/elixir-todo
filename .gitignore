@@ -24,3 +24,4 @@ test-*.tar
 
 /.elixir_ls/
 
+/persist/

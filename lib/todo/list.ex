@@ -1,8 +1,8 @@
 defmodule Todo.List do
-  defstruct auto_id: 1, entries: %{}
+  defstruct auto_id: 1, name: nil, entries: %{}
 
-  def new(entries \\ []) do
-    Enum.reduce(entries, %Todo.List{}, &add(&2, &1))
+  def new(name, entries \\ []) do
+    Enum.reduce(entries, %Todo.List{name: name}, &add(&2, &1))
   end
 
   def entries(todo_list) do
@@ -20,8 +20,9 @@ defmodule Todo.List do
     new_entries = Map.put(todo_list.entries, todo_list.auto_id, entry)
 
     %Todo.List{
-      auto_id: todo_list.auto_id + 1,
-      entries: new_entries
+      todo_list
+      | auto_id: todo_list.auto_id + 1,
+        entries: new_entries
     }
   end
 
