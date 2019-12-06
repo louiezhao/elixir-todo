@@ -1,4 +1,7 @@
 defmodule Todo.Database do
+  @moduledoc """
+  persistent storage for todo list
+  """
   use GenServer
 
   def start, do: GenServer.start(__MODULE__, nil, name: __MODULE__)
