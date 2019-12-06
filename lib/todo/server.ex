@@ -16,6 +16,35 @@ defmodule Todo.Server do
   def execute(server, {:update, id, k, v}), do: update(server, id, k, v)
 
   def cleanup(server), do: send(server, :cleanup)
+  def stop(server), do: send(server, :terminate)
+
+  # defp bind(f) do
+  #  fn result ->
+  #    case result do
+  #      {:error, _} -> result
+  #      {{:error, _}, _} -> result
+  #      {_, server} -> {f.(server), server}
+  #    end
+  #  end
+  # end
+
+  # Chaining world-crossing functions with "bind"
+  # Monad: chain effects-generating functions in series
+  # a bind function that converts a "diagonal" (world-crossing)
+  # function into a "horizontal" (E-world-only) function
+  def bind(result, f) do
+    case result do
+      {:error, _} ->
+        result
+
+      {{:error, _}, _} ->
+        result
+
+      {_, server} ->
+        # a return function (lift)
+        {f.(server), server}
+    end
+  end
 
   @impl GenServer
   def init(name) do
@@ -47,6 +76,10 @@ defmodule Todo.Server do
   @impl GenServer
   def handle_info(:cleanup, state) do
     {:noreply, Todo.List.new(state.name) |> store}
+  end
+
+  def handle_info(:terminate, state) do
+    {:stop, :normal, state}
   end
 
   defp store(todo_list) do
