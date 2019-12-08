@@ -5,14 +5,20 @@ defmodule Todo.ServerTest do
   setup_all do
     {:ok, system} = Todo.System.start_link()
 
-    on_exit(fn -> Process.exit(system, :shutdown) end)
+    on_exit(fn -> Helper.assert_exit(system) end)
 
+    :ok
+  end
+
+  setup do
+    # ensure async database operation to finish
+    on_exit(fn -> Process.sleep(100) end)
     :ok
   end
 
   test "server process" do
     {_, server} =
-      S.start("Bob")
+      S.start_link("Bob")
       |> S.bind(&S.add(&1, %{date: ~D[2016-08-09], title: "Dentist"}))
       |> S.bind(&S.add(&1, %{date: ~D[2017-09-12], title: "Reservation"}))
       |> S.bind(&S.add(&1, %{date: ~D[2017-09-12], title: "Traveling"}))
@@ -28,6 +34,5 @@ defmodule Todo.ServerTest do
     assert 4 = S.list(server) |> Enum.count()
     S.cleanup(server)
     assert 0 = S.list(server) |> Enum.count()
-    Process.sleep(100)
   end
 end

@@ -1,8 +1,8 @@
 defmodule Todo.Server do
-  use GenServer
+  use GenServer, restart: :temporary
 
-  def start(name) do
-    GenServer.start(__MODULE__, name)
+  def start_link(name) do
+    GenServer.start_link(__MODULE__, name, name: via_tuple(name))
   end
 
   def add(server, entry), do: GenServer.cast(server, {:add, entry})
@@ -12,6 +12,8 @@ defmodule Todo.Server do
   def list(server), do: GenServer.call(server, :list)
   def cleanup(server), do: send(server, :cleanup)
   def stop(server), do: send(server, :terminate)
+
+  defp via_tuple(name), do: Todo.Registry.via_tuple({__MODULE__, name})
 
   # defp bind(f) do
   #  fn result ->

@@ -1,10 +1,10 @@
 defmodule Todo.System do
-  use Supervisor
-
-  def start_link, do: Supervisor.start_link(__MODULE__, nil)
-
-  def init(_) do
+  def start_link do
     IO.puts("starting system")
-    Supervisor.init([Todo.Cache, Todo.Registry, Todo.Database], strategy: :one_for_one)
+
+    Supervisor.start_link([Todo.Cache, Todo.Registry, Todo.Database],
+      name: __MODULE__,
+      strategy: :one_for_one
+    )
   end
 end

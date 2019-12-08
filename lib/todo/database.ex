@@ -9,7 +9,7 @@ defmodule Todo.Database do
     IO.puts("starting database")
     File.mkdir_p!(@db_folder)
     children = 1..@pool_size |> Enum.map(&worker_spec/1)
-    Supervisor.start_link(children, strategy: :one_for_one)
+    Supervisor.start_link(children, name: __MODULE__, strategy: :one_for_one)
   end
 
   def child_spec(_) do
@@ -20,16 +20,17 @@ defmodule Todo.Database do
     }
   end
 
-  defp worker_spec(worker_id) do
-    Supervisor.child_spec({Todo.DatabaseWorker, {@db_folder, worker_id}}, id: worker_id)
-  end
-
   def fetch(name) do
     name |> choose_worker |> Todo.DatabaseWorker.fetch(name)
   end
 
   def store(todo_list) do
     todo_list.name |> choose_worker |> Todo.DatabaseWorker.store(todo_list)
+  end
+
+  defp worker_spec(worker_id) do
+    # id: any term used to identify the child specification internally by the supervisor
+    Supervisor.child_spec({Todo.DatabaseWorker, {@db_folder, worker_id}}, id: worker_id)
   end
 
   defp choose_worker(name) do

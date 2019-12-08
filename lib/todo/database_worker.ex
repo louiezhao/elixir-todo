@@ -9,6 +9,10 @@ defmodule Todo.DatabaseWorker do
     GenServer.start_link(__MODULE__, db_folder, name: via_tuple(worker_id))
   end
 
+  # Note: database workers' public interfaces expose `worker_id`
+  # instead of `pid` (e.g. todo server) because workers are created statically
+  # and pid query (via_tuple) is better to be hidden inside the implementation
+  # By contrast, todo server is created/got dynamically and pid is exposed
   def fetch(worker_id, name), do: GenServer.call(via_tuple(worker_id), {:fetch, name})
   def store(worker_id, todo_list), do: GenServer.cast(via_tuple(worker_id), {:store, todo_list})
 

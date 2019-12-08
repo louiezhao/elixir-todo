@@ -5,33 +5,51 @@ defmodule Todo.CacheTest do
     {:ok, system} = Todo.System.start_link()
 
     # ? what is Supervisor.stop for?
-    on_exit(fn -> Helper.shutdown(system) end)
+    on_exit(fn -> Helper.assert_exit(system) end)
 
     :ok
   end
 
   test "get server from cache" do
-    pid = Todo.Cache.server("Tom")
-    assert pid != Todo.Cache.server("Jerry")
-    assert pid == Todo.Cache.server("Tom")
+    pid = s("Tom")
+    assert pid != s("Jerry")
+    assert pid == s("Tom")
   end
 
   test "bunch of servers" do
-    1..100 |> Enum.each(&Todo.Cache.server("No. #{&1}"))
+    1..100 |> Enum.each(&s("No. #{&1}"))
     assert 100 < :erlang.system_info(:process_count)
   end
 
   test "restart cache" do
-    cache = fn -> Process.whereis(Todo.Cache) end
-    tom = fn -> Todo.Cache.server("Tom") end
+    cid = cache_pid()
+    tid = s("Tom")
+    assert 3 == Supervisor.count_children(system_pid()).supervisors
 
-    cid = cache.()
-    tid = tom.()
+    # ? whey :shutdown signal doesn't work with database and cache, but with system
+    # https://stackoverflow.com/questions/51651731/supervisor-restart-child-2-or-process-exitpid-kill
+    # Helper.shutdown(cid)
+    Helper.assert_exit(cid, :kill)
 
-    Helper.shutdown(cid)
-    Process.sleep(100)
-
-    assert cid != cache.()
-    assert tid != tom.()
+    assert 3 == Supervisor.count_children(system_pid()).supervisors
+    assert cid != cache_pid()
+    assert tid != s("Tom")
   end
+
+  test "dynamic server" do
+    tid = s("Tom")
+    worker_count = Supervisor.count_children(cache_pid()).workers
+
+    Helper.assert_exit(tid, :kill)
+
+    assert worker_count - 1 == Supervisor.count_children(cache_pid()).workers
+  end
+
+  defp s(name) do
+    {:ok, pid} = Todo.Cache.server(name)
+    pid
+  end
+
+  defp cache_pid, do: Process.whereis(Todo.Cache)
+  defp system_pid, do: Process.whereis(Todo.System)
 end

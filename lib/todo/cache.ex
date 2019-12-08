@@ -1,27 +1,23 @@
-defmodule Todo.Cache do
-  use GenServer
+# https://hexdocs.pm/elixir/Supervisor.html
 
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
+defmodule Todo.Cache do
+  def start_link() do
+    IO.puts("starting cache")
+    DynamicSupervisor.start_link(name: __MODULE__, strategy: :one_for_one)
+  end
+
+  def child_spec(_) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, []},
+      type: :supervisor
+    }
   end
 
   def server(name) do
-    GenServer.call(__MODULE__, {:server_process, name})
-  end
-
-  def init(_) do
-    IO.puts("starting cache")
-    {:ok, %{}}
-  end
-
-  def handle_call({:server_process, name}, _, todo_servers) do
-    case Map.fetch(todo_servers, name) do
-      {:ok, todo_server} ->
-        {:reply, todo_server, todo_servers}
-
-      :error ->
-        {:ok, new_server} = Todo.Server.start(name)
-        {:reply, new_server, Map.put_new(todo_servers, name, new_server)}
+    case DynamicSupervisor.start_child(__MODULE__, {Todo.Server, name}) do
+      {:ok, pid} -> {:ok, pid}
+      {:error, {:already_started, pid}} -> {:ok, pid}
     end
   end
 end
