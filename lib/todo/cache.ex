@@ -9,7 +9,10 @@ defmodule Todo.Cache do
     GenServer.call(__MODULE__, {:server_process, name})
   end
 
-  def init(_), do: {:ok, %{}}
+  def init(_) do
+    IO.puts("starting todo cache")
+    {:ok, %{}}
+  end
 
   def handle_call({:server_process, name}, _, todo_servers) do
     case Map.fetch(todo_servers, name) do

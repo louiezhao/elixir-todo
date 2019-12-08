@@ -3,8 +3,8 @@ defmodule Todo.ServerTest do
   alias Todo.Server, as: S
 
   setup_all do
-    {:ok, db} = Todo.Database.start()
-    on_exit(fn -> GenServer.stop(db) end)
+    {:ok, system} = Todo.System.start_link()
+    on_exit(fn -> Process.exit(system, :shutdown) end)
     :ok
   end
 

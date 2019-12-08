@@ -43,6 +43,7 @@ defmodule Todo.Server do
 
   @impl GenServer
   def init(name) do
+    IO.puts("starting todo server #{name}")
     {:ok, Todo.Database.fetch(name) || Todo.List.new(name)}
   end
 

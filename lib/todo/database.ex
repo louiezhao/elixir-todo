@@ -4,7 +4,7 @@ defmodule Todo.Database do
   """
   use GenServer
 
-  def start, do: GenServer.start(__MODULE__, nil, name: __MODULE__)
+  def start_link(_), do: GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   def fetch(name), do: GenServer.call(__MODULE__, {:fetch, name})
   def store(todo_list), do: GenServer.cast(__MODULE__, {:store, todo_list})
 
@@ -12,6 +12,7 @@ defmodule Todo.Database do
 
   @impl GenServer
   def init(_) do
+    IO.puts("starting todo database")
     {:ok, 1..@worker_count |> Enum.map(&create_worker/1)}
   end
 
