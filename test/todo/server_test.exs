@@ -4,7 +4,9 @@ defmodule Todo.ServerTest do
 
   setup_all do
     {:ok, system} = Todo.System.start_link()
+
     on_exit(fn -> Process.exit(system, :shutdown) end)
+
     :ok
   end
 
@@ -26,6 +28,6 @@ defmodule Todo.ServerTest do
     assert 4 = S.list(server) |> Enum.count()
     S.cleanup(server)
     assert 0 = S.list(server) |> Enum.count()
-    Process.sleep(1000)
+    Process.sleep(100)
   end
 end

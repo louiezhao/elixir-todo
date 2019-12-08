@@ -10,7 +10,7 @@ defmodule Todo.Cache do
   end
 
   def init(_) do
-    IO.puts("starting todo cache")
+    IO.puts("starting cache")
     {:ok, %{}}
   end
 

@@ -4,11 +4,8 @@ defmodule Todo.CacheTest do
   setup_all do
     {:ok, system} = Todo.System.start_link()
 
-    on_exit(fn ->
-      # ? why doesn't work
-      # Supervisor.stop(cache_spv)
-      Process.exit(system, :shutdown)
-    end)
+    # ? what is Supervisor.stop for?
+    on_exit(fn -> Helper.shutdown(system) end)
 
     :ok
   end
@@ -20,7 +17,21 @@ defmodule Todo.CacheTest do
   end
 
   test "bunch of servers" do
-    1..1000 |> Enum.each(&Todo.Cache.server("Todo List No. #{&1}"))
-    assert 1000 < :erlang.system_info(:process_count)
+    1..100 |> Enum.each(&Todo.Cache.server("No. #{&1}"))
+    assert 100 < :erlang.system_info(:process_count)
+  end
+
+  test "restart cache" do
+    cache = fn -> Process.whereis(Todo.Cache) end
+    tom = fn -> Todo.Cache.server("Tom") end
+
+    cid = cache.()
+    tid = tom.()
+
+    Helper.shutdown(cid)
+    Process.sleep(100)
+
+    assert cid != cache.()
+    assert tid != tom.()
   end
 end

@@ -5,9 +5,7 @@ defmodule Todo.DatabaseTest do
   setup_all do
     {:ok, system} = Todo.System.start_link()
 
-    on_exit(fn ->
-      Process.exit(system, :shutdown)
-    end)
+    on_exit(fn -> Helper.shutdown(system) end)
 
     :ok
   end
@@ -18,6 +16,7 @@ defmodule Todo.DatabaseTest do
     |> S.bind(&S.add(&1, %{title: "excercise", date: ~D[2019-12-03]}))
     |> S.bind(&S.stop/1)
 
+    Process.sleep(100)
     :ok
   end
 

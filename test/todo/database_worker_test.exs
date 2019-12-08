@@ -5,9 +5,7 @@ defmodule Todo.DatabaseWorkerTest do
   setup_all do
     {:ok, system} = Todo.System.start_link()
 
-    on_exit(fn ->
-      Process.exit(system, :shutdown)
-    end)
+    on_exit(fn -> Helper.shutdown(system) end)
 
     :ok
   end
@@ -18,6 +16,13 @@ defmodule Todo.DatabaseWorkerTest do
     |> S.bind(&S.add(&1, %{title: "excercise", date: ~D[2019-12-03]}))
     |> S.bind(&S.stop/1)
 
+    # ? database work may be killed during work
+    # that make the file corrupted (size = 0)
+    # how to shutdown the database work gracefully
+
+    # ? wait for database worker to complete writing
+    # any more elegant solution?
+    Process.sleep(100)
     :ok
   end
 
