@@ -2,12 +2,14 @@ defmodule Todo.CacheTest do
   use ExUnit.Case, async: false
 
   setup_all do
-    {:ok, cache} = Todo.Cache.start()
+    {:ok, cache_spv} = Todo.System.start_link()
     {:ok, db} = Todo.Database.start()
     :ok
 
     on_exit(fn ->
-      GenServer.stop(cache)
+      # ? why doesn't work
+      # Supervisor.stop(cache_spv)
+      Process.exit(cache_spv, :shutdown)
       GenServer.stop(db)
     end)
   end

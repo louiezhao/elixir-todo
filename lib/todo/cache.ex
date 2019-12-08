@@ -1,8 +1,8 @@
 defmodule Todo.Cache do
   use GenServer
 
-  def start do
-    GenServer.start(__MODULE__, nil, name: __MODULE__)
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
   def server(name) do
