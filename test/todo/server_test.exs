@@ -35,4 +35,10 @@ defmodule Todo.ServerTest do
     S.cleanup(server)
     assert 0 = S.list(server) |> Enum.count()
   end
+
+  test "timeout" do
+    {_, server} = S.start_link("Bob")
+    Process.sleep(:timer.seconds(4))
+    assert !Process.alive?(server)
+  end
 end
