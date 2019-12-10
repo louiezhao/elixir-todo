@@ -2,13 +2,13 @@ defmodule Todo.ServerTest do
   use ExUnit.Case, async: false
   alias Todo.Server, as: S
 
-  setup_all do
-    {:ok, system} = Todo.System.start_link()
+  # setup_all do
+  #  {:ok, system} = Todo.System.start_link()
 
-    on_exit(fn -> Helper.assert_exit(system) end)
+  #  on_exit(fn -> Helper.assert_exit(system) end)
 
-    :ok
-  end
+  #  :ok
+  # end
 
   setup do
     # ensure async database operation to finish

@@ -1,14 +1,14 @@
 defmodule Todo.CacheTest do
   use ExUnit.Case, async: false
 
-  setup_all do
-    {:ok, system} = Todo.System.start_link()
+  # setup_all do
+  #  {:ok, system} = Todo.System.start_link()
 
-    # ? what is Supervisor.stop for?
-    on_exit(fn -> Helper.assert_exit(system) end)
+  #  # ? what is Supervisor.stop for?
+  #  on_exit(fn -> Helper.assert_exit(system) end)
 
-    :ok
-  end
+  #  :ok
+  # end
 
   test "get server from cache" do
     pid = s("Tom")
@@ -24,14 +24,14 @@ defmodule Todo.CacheTest do
   test "restart cache" do
     cid = cache_pid()
     tid = s("Tom")
-    assert 3 == Supervisor.count_children(system_pid()).supervisors
+    assert 2 == Supervisor.count_children(system_pid()).supervisors
 
     # ? whey :shutdown signal doesn't work with database and cache, but with system
     # https://stackoverflow.com/questions/51651731/supervisor-restart-child-2-or-process-exitpid-kill
     # Helper.shutdown(cid)
     Helper.assert_exit(cid, :kill)
 
-    assert 3 == Supervisor.count_children(system_pid()).supervisors
+    assert 2 == Supervisor.count_children(system_pid()).supervisors
     assert cid != cache_pid()
     assert tid != s("Tom")
   end
