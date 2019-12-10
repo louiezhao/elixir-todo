@@ -1,6 +1,6 @@
 defmodule Todo.Web do
   use Plug.Router
-  alias Todo.Server, as: S
+  import Todo.Server, only: [query: 2, bind: 2, add: 2]
 
   plug(:match)
   plug(:dispatch)
@@ -21,7 +21,7 @@ defmodule Todo.Web do
 
     list_name
     |> Todo.Cache.server()
-    |> S.bind(&S.add(&1, %{date: date, title: title}))
+    |> bind(&add(&1, %{date: date, title: title}))
 
     conn |> Plug.Conn.put_resp_content_type("text/plain") |> Plug.Conn.send_resp(200, "OK")
   end
@@ -34,7 +34,7 @@ defmodule Todo.Web do
     {entries, _} =
       list_name
       |> Todo.Cache.server()
-      |> S.bind(&Todo.Server.query(&1, date))
+      |> bind(&query(&1, date))
 
     formatted_entries =
       entries

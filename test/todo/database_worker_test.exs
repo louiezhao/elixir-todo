@@ -1,6 +1,6 @@
 defmodule Todo.DatabaseWorkerTest do
   use ExUnit.Case, async: false
-  alias Todo.Server, as: S
+  import Todo.Server
 
   # setup_all do
   #  {:ok, system} = Todo.System.start_link()
@@ -11,10 +11,10 @@ defmodule Todo.DatabaseWorkerTest do
   # end
 
   setup do
-    S.start_link("Tom")
-    |> S.bind(&S.cleanup/1)
-    |> S.bind(&S.add(&1, %{title: "excercise", date: ~D[2019-12-03]}))
-    |> S.bind(&S.stop/1)
+    start_link("Tom")
+    |> bind(&cleanup/1)
+    |> bind(&add(&1, %{title: "excercise", date: ~D[2019-12-03]}))
+    |> bind(&stop/1)
 
     # ? database work may be killed during work
     # that make the file corrupted (size = 0)
@@ -30,7 +30,7 @@ defmodule Todo.DatabaseWorkerTest do
   end
 
   test "load stored todo list from database" do
-    {:ok, server} = S.start_link("Tom")
-    assert [%{title: "excercise"}] = S.query(server, ~D[2019-12-03])
+    {:ok, server} = start_link("Tom")
+    assert [%{title: "excercise"}] = query(server, ~D[2019-12-03])
   end
 end
