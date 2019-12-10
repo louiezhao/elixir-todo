@@ -44,5 +44,5 @@ defmodule Todo.DatabaseWorker do
   end
 
   defp file_path(db_folder, name), do: Path.join(db_folder, name)
-  defp via_tuple(worker_id), do: Todo.Registry.via_tuple({__MODULE__, worker_id})
+  # defp via_tuple(worker_id), do: Todo.Registry.via_tuple({__MODULE__, worker_id})
 end
